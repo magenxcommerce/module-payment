@@ -4,41 +4,25 @@
  * See COPYING.txt for license details.
  */
 
+// @codingStandardsIgnoreFile
 /**
  * @var \Magento\Payment\Block\Transparent\Iframe $block
- * @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
  */
 $params = $block->getParams();
 
-/** @var \Magento\Framework\Json\Helper\Data $jsonHelper */
-$jsonHelper = $block->getData('jsonHelper');
 ?>
 <html>
 <head>
-    <?php $scriptString = '' ?>
+<script>
 <?php if (isset($params['redirect'])): ?>
-    <?php $scriptString .= <<<script
-    window.location="{$block->escapeJs($params['redirect'])}";
-script;
-    ?>
+    window.location="<?= $block->escapeUrl($params['redirect']) ?>";
 <?php elseif (isset($params['redirect_parent'])): ?>
-    <?php $scriptString .= <<<script
-    window.top.location="{$block->escapeJs($params['redirect_parent'])}";
-script;
-    ?>
+    window.top.location="<?= $block->escapeUrl($params['redirect_parent']) ?>";
 <?php elseif (isset($params['error_msg'])): ?>
-    <?php $encodedErrorMsg = /* @noEscape */ $jsonHelper->jsonEncode($params['error_msg']);
-    $scriptString .= <<<script
-    window.top.alert({$encodedErrorMsg});
-script;
-    ?>
+    window.top.alert(<?= /* @noEscape */ $this->helper('Magento\Framework\Json\Helper\Data')->jsonEncode($params['error_msg']) ?>);
 <?php elseif (isset($params['order_success'])): ?>
-    <?php $scriptString .= <<<script
-    window.top.location = "{$block->escapeJs($params['order_success'])}";
-script;
-    ?>
+    window.top.location = "<?= $block->escapeUrl($params['order_success']) ?>";
 <?php else: ?>
-    <?php $scriptString .= <<<script
     var require = window.top.require;
     require(['jquery'], function($) {
         $('#edit_form').trigger('processStop');
@@ -51,10 +35,8 @@ script;
 
         $('#edit_form').trigger('realOrder');
     });
-script;
-    ?>
 <?php endif; ?>
-    <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $scriptString, false) ?>
+</script>
 </head>
 <body>
 </body>

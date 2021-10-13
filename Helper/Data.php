@@ -84,8 +84,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get config name of method model
-     *
      * @param string $code
      * @return string
      */
@@ -149,7 +147,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
             $res[] = $methodInstance;
         }
-        // phpcs:ignore Generic.PHP.NoSilencedErrors
+
         @uasort(
             $res,
             function (MethodInterface $a, MethodInterface $b) {
@@ -261,12 +259,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $groupRelations = [];
 
         foreach ($this->getPaymentMethods() as $code => $data) {
-            $storeId = $store ? (int)$store->getId() : null;
-            $storedTitle = $this->getMethodStoreTitle($code, $storeId);
-            if (!empty($storedTitle)) {
-                $methods[$code] = $storedTitle;
+            if (isset($data['title'])) {
+                $methods[$code] = $data['title'];
+            } else {
+                $methods[$code] = $this->getMethodInstance($code)->getConfigData('title', $store);
             }
-
             if ($asLabelValue && $withGroups && isset($data['group'])) {
                 $groupRelations[$code] = $data['group'];
             }
@@ -346,23 +343,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Magento\Payment\Model\Method\Free::XML_PATH_PAYMENT_FREE_PAYMENT_ACTION,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
-        );
-    }
-
-    /**
-     * Get config title of payment method
-     *
-     * @param string $code
-     * @param int|null $storeId
-     * @return string
-     */
-    private function getMethodStoreTitle(string $code, ?int $storeId = null): string
-    {
-        $configPath = sprintf('%s/%s/title', self::XML_PATH_PAYMENT_METHODS, $code);
-        return (string) $this->scopeConfig->getValue(
-            $configPath,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $storeId
         );
     }
 }
