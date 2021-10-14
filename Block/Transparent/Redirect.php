@@ -11,6 +11,9 @@ use Magento\Framework\View\Element\Template\Context;
 
 /**
  * Redirect block for register specific params in layout
+ *
+ * @api
+ * @since 100.3.5
  */
 class Redirect extends Template
 {
@@ -42,6 +45,7 @@ class Redirect extends Template
      * Returns url for redirect.
      *
      * @return string
+     * @since 100.3.5
      */
     public function getRedirectUrl(): string
     {
@@ -56,6 +60,7 @@ class Redirect extends Template
      * which can be different from the system character encoding (UTF-8).
      *
      * @return array
+     * @since 100.3.5
      */
     public function getPostParams(): array
     {
